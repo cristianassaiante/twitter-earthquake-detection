@@ -49,6 +49,9 @@ result_set = c.execute('''select id, latS, lonE, timestamp
                           order by felt
                           desc''' % userid)
 
+with open("dataset", 'r') as f:
+    dataset = [json.loads(x)['tid'] for x in f]
+
 for id, latS, lonE, ts in result_set:
     since = datetime.fromtimestamp(ts)
     until = since + timedelta(hours = DELTA)
@@ -64,14 +67,26 @@ for id, latS, lonE, ts in result_set:
     twint.run.Search(c)
     
     if os.path.exists('tweets.json'):
+
+        tweets = []
         for line in open('tweets.json'):
             tweet = json.loads(line)
+            tid   = tweet['id']
+            user  = tweet['name']
+
+            if tid in dataset:
+                continue
+            if user in blocklist:
+                continue
+
+            tweets.append(tweet)
+            
+
+        for tweet in tweets:
             text  = tweet['tweet']
             tid   = tweet['id']
             hid   = id
             user  = tweet['name']
-            
-            if user in blocklist: continue
             
             sys.stdout.write('\b' * (ROWS * COLS))
             x = user + "\n" + text
