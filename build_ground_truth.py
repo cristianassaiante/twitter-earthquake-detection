@@ -5,6 +5,17 @@ import sys
 import json
 import os
 
+import termios, tty
+def _getch():
+   fd = sys.stdin.fileno()
+   old_settings = termios.tcgetattr(fd)
+   try:
+      tty.setraw(fd)
+      ch = sys.stdin.read(1)     #This number represents the length
+   finally:
+      termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+   return ch
+
 connection = sqlite3.connect('earthquakes.db')
 c = connection.cursor()
 
@@ -45,7 +56,7 @@ for id, latS, lonE, ts in result_set:
     c = twint.Config()
     c.Since = str(since)
     c.Until = str(until)
-    c.Geo = '%lf,%lf,1km' % (latS, lonE)
+    c.Geo = '%lf,%lf,2km' % (latS, lonE)
     c.Output = 'tweets.json'
     c.Store_json = True
     c.Hide_output = True
@@ -73,8 +84,11 @@ for id, latS, lonE, ts in result_set:
             sys.stdout.flush()
             
             y = None
-            while y not in ['a', 's', 'd']:
-                y = input()
+            while y not in ['a', 's', 'd', 'q']:
+                y = _getch()
+
+            if y == 'q':
+                exit(0)
             
             output = json.dumps( {'text' : text, 'y' : y, 'tid' : tid, 'hid' : hid} )
             
