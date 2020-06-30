@@ -2,6 +2,7 @@
 # databases
 *.db
 dataset
+tweets.json
 
 # virtual envs, add yours if it is placed in the repo directory
 wirenv/
