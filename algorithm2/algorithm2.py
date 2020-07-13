@@ -7,6 +7,7 @@ import os
 import numpy
 import math
 from twython import Twython
+import googlemaps
 
 from classifier import is_tweet_about_earthquake, preprocess_tweet
 
@@ -100,11 +101,11 @@ for _, latS, lonE, ts in result_set:
 
             
 locations = []
-
-CONSUMER_KEY = 
-CONSUMER_SECRET = 
-OAUTH_TOKEN = 
-OAUTH_TOKEN_SECRET = 
+import secrets
+CONSUMER_KEY = secrets.CONSUMER_KEY
+CONSUMER_SECRET = secrets.CONSUMER_SECRET
+OAUTH_TOKEN = secrets.OAUTH_TOKEN
+OAUTH_TOKEN_SECRET = secrets.OAUTH_TOKEN_SECRET
 twitter = Twython(
     CONSUMER_KEY, CONSUMER_SECRET,
     OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
@@ -145,11 +146,10 @@ cov_determinant = numpy.linalg.det(cov_matrix)
 
 inverse_probability = (2*math.pi)* math.sqrt(cov_determinant)
            
-            
+ 
             
             
 print ("estimated position: " + str(pos_estimate[0]) + "; " + str(pos_estimate[1]))
 if (inverse_probability > 0):
     print ("probability (density): " + str(1/inverse_probability))
     print("(if the variance is really small, the density may be greater than 1)")
-                
