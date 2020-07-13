@@ -7,8 +7,9 @@ tweets.json
 # virtual envs, add yours if it is placed in the repo directory
 wirenv/
 
-# better safe than sorry
+# credentials
 twitter_credentials.json
+secrets.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
