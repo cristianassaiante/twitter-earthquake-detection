@@ -131,7 +131,6 @@ num_locations = 0 #number of locations considered so far
 probability = 0 #probability that my estimation is correct
 for pos in locations:
     total = (total[0] + pos[0], total[1] + pos[1])
-    print (total)
     total_square = (total_square[0] + pos[0]**2, total_square[1] + pos[1]**2)
     sum_of_product += (pos[0]*pos[1])
     num_locations += 1
