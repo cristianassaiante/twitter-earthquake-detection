@@ -72,7 +72,7 @@ def build_dataset(vectorizers, with_unsure = False, test_ratio = 0.2):
                 x_length.append( [length, ] )
                 x_context.append( context )
         x_length = np.array( x_length )
-        y = np.array(y)
+        y = np.array(y).astype(np.uint8)
         
         x_vect   = []
         for vectorizer in vectorizers:
@@ -83,9 +83,9 @@ def build_dataset(vectorizers, with_unsure = False, test_ratio = 0.2):
             for i in range(len(x_context)):
                 x_context_vec[i] = np.array(list( map( lambda x: vectorizer.vocabulary_.get(x, -1), x_context_vec[i] ) ))
             
-            x = np.hstack( [x1, x_context_vec, x_length] )
+            x = np.hstack( [x1, x_context_vec, x_length] ).astype(np.float64)
             x_vect.append( x )
-                
+        #x_vect = x_vect.astype(np.float64)
         return list(map(lambda w: train_test_split(w, y, test_size = test_ratio), x_vect))
     
 
@@ -121,9 +121,9 @@ if __name__ == '__main__':
 
     datasets = build_dataset( (x[0] for x in vec_clf_pairs),
                             with_unsure = True)
-
     for (x_train, x_test, y_train, y_test), clf in zip(datasets, [w[1] for w in vec_clf_pairs]):
-        clf.fit( x_train, y_train )
+        #print(x_train.shape, y_train.shape, x_)
+        clf.fit( x_train.astype(np.float64), y_train )
         print("%-30.30s accuracy: %.3lf precision: %.3lf" % ( clf.__class__.__name__,
                                                             clf.score( x_test, y_test ),
                                                             precision_score( y_test, clf.predict( x_test ))
