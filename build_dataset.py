@@ -27,9 +27,9 @@ ROWS, COLS = map(int, os.popen('stty size', 'r').read().split()) # rows and cols
 assert len(sys.argv) == 3 and sys.argv[1] == '-id' and 0 <= int(sys.argv[2]) <= 2, 'No'
 userid = int(sys.argv[2])
 
-ds_fname = 'dataset'
+ds_fname = 'dataset.json'
 
-if not os.path.isfile('dataset'):
+if not os.path.isfile('dataset.json'):
     open(ds_fname, 'a').close()
 
 blocklist = ['Earthquake Map',

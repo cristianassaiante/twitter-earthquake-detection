@@ -33,7 +33,7 @@ tot_req = 0
 """
 connection = sqlite3.connect('earthquakes.db')
 c = connection.cursor()
-assert os.path.isfile("dataset"), "Dataset file does not exists"
+assert os.path.isfile("dataset.json"), "Dataset file does not exists"
 result_set = c.execute('''select id, latS, lonE, timestamp
                           from earthquakes
                           order by felt
@@ -42,8 +42,8 @@ result_set = c.execute('''select id, latS, lonE, timestamp
 """
     PARAMETERS
 """
-pf = 0.35 
-delta = 5   # minutes
+pf = 0.30 
+delta = 10   # seconds
 """
 """
 
@@ -64,15 +64,17 @@ old_cov_determinant = None
 # start by using known earthquakes for experiments
 for _, latS, lonE, ts in result_set:
 
-    i = 0
+    print("[*] Earthquake epicentre: {}, {}\n".format(lonE, latS))
+
+    i = 1
     while True:   # simulate the "every s seconds" described in the paper
         if i >=20: #just to prevent it from running forever
             break
         # retrieve tweets
-        print('[%d minutes from earthquake]' % (i * delta))
+        print('[%d seconds from earthquake]' % (i * delta))
 
-        since = datetime.fromtimestamp(ts) + timedelta(minutes = i * delta)
-        until = since + timedelta(minutes = delta)
+        since = datetime.fromtimestamp(ts) + timedelta(seconds = i * delta)
+        until = since + timedelta(seconds = delta)
         
         c = twint.Config()
         c.Search = "earthquake"
@@ -193,7 +195,8 @@ for _, latS, lonE, ts in result_set:
                 old_covariance = sum_of_product - (previous_estimate[0]*previous_estimate[1])
                 old_cov_matrix = numpy.array([[old_variance_x, old_covariance],[old_covariance, old_variance_y]])
                 old_cov_determinant = numpy.linalg.det(old_cov_matrix)
-                print ("estimated position: " + str(current_estimate[0]) + "; " + str(current_estimate[1]))
+                print ("[6] Estimated position: " + str(current_estimate[0]) + "; " + str(current_estimate[1]))
+                print()
                 #skip = True
                 i += 1
                 continue
@@ -280,12 +283,9 @@ for _, latS, lonE, ts in result_set:
                 old_cov_matrix = cov_matrix
                 old_cov_determinant = cov_determinant
 
-                print ("estimated position: " + str(current_estimate[0]) + "; " + str(current_estimate[1]))
-
-
-
+                print("[6] Estimated position: " + str(current_estimate[0]) + "; " + str(current_estimate[1]))
+                print()
             
-            print()
             os.unlink('tweets.json')
         else:
             break
@@ -294,9 +294,3 @@ for _, latS, lonE, ts in result_set:
                 #I made sure to increase i in those cases, but a mistake is still possible. If there is a mistake you can't understand, it is possibly because of this
 
     break
-
-
-
-print("if the estimation suddenly changes it is probably because there is a lack of tweets")
-print("it is safer to take as the best estimate the one before the sudden change")
-# in general will perform poorly when there are close to no tweets available
